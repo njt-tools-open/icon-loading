@@ -1,0 +1,21 @@
+{
+  "name": "@njt-tools-open/icon-loading-solidjs-types",
+  "version": "0.0.0",
+  "description": "The @njt-tools-open/icon-loading declaration for solidjs.",
+  "author": "xiaoYown <qzy09101018@sina.com>",
+  "license": "ISC",
+  "main": "typings/index.d.ts",
+  "types": "typings/index.d.ts",
+  "directories": {
+    "typings": "typings"
+  },
+  "files": [
+    "typings"
+  ],
+  "devDependencies": {
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "solid-js": "^1.5.7"
+  }
+}

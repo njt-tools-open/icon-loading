@@ -1,0 +1,32 @@
+{
+  "name": "njt-loading-icons",
+  "keywords": [],
+  "author": "xiaoYown",
+  "license": "MIT",
+  "scripts": {
+    "dev": "pnpm scripts watch",
+    "build": "pnpm scripts build",
+    "scripts": "ts-node --project ./scripts/tsconfig.json -r ./scripts/node_modules/tsconfig-paths/register scripts",
+    "lint:all": "pnpm lint:packages && pnpm lint:components && pnpm lint:templates",
+    "lint:packages": "pnpm --filter './packages/**' lint:es",
+    "lint:components": "pnpm --filter './components/**' lint:es",
+    "lint:templates": "pnpm --filter './templates/**' lint:es",
+    "lint:prettier": "prettier --list-different \"src/**/*.ts\"",
+    "format:all": "pnpm format:packages && pnpm format:components && pnpm format:templates",
+    "format:packages": "pnpm --filter './packages/**' format",
+    "format:components": "pnpm --filter './components/**' format",
+    "format:templates": "pnpm --filter './templates/**' format"
+  },
+  "dependencies": {
+    "@types/node": "^16.11.2",
+    "@typescript-eslint/eslint-plugin": "5.40.0",
+    "@typescript-eslint/parser": "5.40.0",
+    "eslint": "8.25.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "prettier": "2.7.1",
+    "typescript": "4.8.2"
+  }
+}

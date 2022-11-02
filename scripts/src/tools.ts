@@ -1,4 +1,5 @@
-import { statSync } from 'fs';
+import { readdirSync, statSync } from 'fs';
+import path from 'path';
 
 export const isFolder = (name: string): boolean => {
   try {
@@ -16,4 +17,10 @@ export const isFile = (name: string): boolean => {
   } catch (_error) {
     return false;
   }
+};
+
+export const getAllComponents = () => {
+  return readdirSync(path.resolve('./components')).filter(folder => {
+    return isFile(path.resolve(`./components/${folder}/package.json`));
+  });
 };

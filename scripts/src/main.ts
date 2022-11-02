@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
-import { readdirSync, readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { Command } from 'commander';
 import inquirer from 'inquirer';
+
 import { build, watch } from './compiler';
 import { create } from './create';
-import { isFile } from './tools';
+import { release } from './release';
+
+import { getAllComponents } from './tools';
 
 const pkg = JSON.parse(
   readFileSync(path.join(__dirname, '../package.json'), { encoding: 'utf8' })
@@ -64,16 +67,12 @@ const askBuildMode = async () => {
 
 /** 选择构建组件 */
 const askBuildComponents = async () => {
-  const choices = readdirSync(path.resolve('./components'))
-    .filter(folder => {
-      return isFile(path.resolve(`./components/${folder}/package.json`));
-    })
-    .map(folder => {
-      return {
-        name: folder,
-        value: `components/${folder}`,
-      };
-    });
+  const choices = getAllComponents().map(folder => {
+    return {
+      name: folder,
+      value: `components/${folder}`,
+    };
+  });
 
   const answer = await inquirer.prompt([
     {
@@ -92,7 +91,7 @@ program
   .description('构建组件')
   .action(async () => {
     const buildType = await askBuildType();
-
+    
     if (buildType === 'entry') {
       build({ components: ['packages/icon-loading'] });
     } else {
@@ -131,6 +130,13 @@ program
       },
     ]);
     create(answer.name);
+  });
+
+program
+  .command('release')
+  .description('发布组件')
+  .action(async () => {
+    release();
   });
 
 program.parse(process.argv);

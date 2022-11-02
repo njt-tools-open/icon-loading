@@ -1,5 +1,5 @@
 import path from 'path';
-import fs, { readdirSync, readFileSync } from 'fs';
+import fs, { readFileSync } from 'fs';
 
 import * as rollup from 'rollup';
 import { terser } from 'rollup-plugin-terser';
@@ -9,7 +9,7 @@ import json from '@rollup/plugin-json';
 import { babel } from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { sync as delSync } from 'del';
-import { isFile } from './tools';
+import { getAllComponents } from './tools';
 
 /** 读取 package 信息 */
 function getPkg(folder: string): Record<string, any> {
@@ -41,19 +41,15 @@ function getBanner(pkg) {
   ].join('\n');
 }
 
-const getAllComponents = (): string[] => {
-  return readdirSync(path.resolve('./components'))
-    .filter(folder => {
-      return isFile(path.resolve(`./components/${folder}/package.json`));
-    })
-    .map(folder => {
-      const content = readFileSync(
-        path.resolve(`./components/${folder}/package.json`),
-        { encoding: 'utf8' }
-      );
-      return JSON.parse(Array.isArray(content) ? content[0] : content)
-        .name as string;
-    });
+const getAllComponentName = (): string[] => {
+  return getAllComponents().map(folder => {
+    const content = readFileSync(
+      path.resolve(`./components/${folder}/package.json`),
+      { encoding: 'utf8' }
+    );
+    return JSON.parse(Array.isArray(content) ? content[0] : content)
+      .name as string;
+  });
 };
 
 /** 获取当前目录 inputOptions */
@@ -70,7 +66,7 @@ const getInputOptions = ({
   external:
     format === 'iife'
       ? []
-      : ['lit', 'lit/decorators.js', ...(isEntry ? getAllComponents() : [])],
+      : ['lit', 'lit/decorators.js', ...(isEntry ? getAllComponentName() : [])],
   cache: false,
   plugins: [
     nodeResolve({
@@ -133,7 +129,11 @@ function getIifeOutput({ folder }: { folder: string }): rollup.OutputOptions {
   };
 }
 
-export const build = async ({ components }: { components: string[] }) => {
+export const build = async ({
+  components,
+}: {
+  components: string[];
+}) => {
   // 清除上次构建
   components.forEach(folder => {
     delSync(path.resolve(`${folder}/lib`));
@@ -149,7 +149,8 @@ export const build = async ({ components }: { components: string[] }) => {
       })
     );
   });
-  Promise.all(esmBundles).then(bundles => {
+
+  await Promise.all(esmBundles).then(bundles => {
     bundles.forEach((bundle, index) => {
       bundle
         .write(
@@ -161,6 +162,9 @@ export const build = async ({ components }: { components: string[] }) => {
           console.log(
             `[ICON COMPILER]: Build "${components[index]}" esm success.`
           );
+        })
+        .catch(error => {
+          console.error(error);
         });
     });
   });
@@ -174,7 +178,8 @@ export const build = async ({ components }: { components: string[] }) => {
       })
     );
   });
-  Promise.all(iifeBundles).then(bundles => {
+
+  await Promise.all(iifeBundles).then(bundles => {
     bundles.forEach((bundle, index) => {
       bundle
         .write(
@@ -186,9 +191,14 @@ export const build = async ({ components }: { components: string[] }) => {
           console.log(
             `[ICON COMPILER]: Build "${components[index]}" iife success.`
           );
+        })
+        .catch(error => {
+          console.error(error);
         });
     });
   });
+
+  return null;
 };
 
 export const watch = ({

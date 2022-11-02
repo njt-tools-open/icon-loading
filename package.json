@@ -15,7 +15,8 @@
     "format:all": "pnpm format:packages && pnpm format:components && pnpm format:templates",
     "format:packages": "pnpm --filter './packages/**' format",
     "format:components": "pnpm --filter './components/**' format",
-    "format:templates": "pnpm --filter './templates/**' format"
+    "format:templates": "pnpm --filter './templates/**' format",
+    "release": "pnpm scripts release"
   },
   "dependencies": {
     "@types/node": "^16.11.2",
